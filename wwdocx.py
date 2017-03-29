@@ -1,16 +1,16 @@
+import logging
 import sys
 import os
 import zipfile
 from zipfile import ZipFile
 import shutil
 from lxml import etree
-import zip_dir
-
 
 class docx():
     def add_elems(self,new_elem):
         for elem in self.elems:
-            etree.SubElement(elem.getparent(),'{%s}%s'%(nsmap['wp'],new_elem）
+            rtn=etree.SubElement(elem,new_elem)
+            rtn.text='test'
         pass
     def remove_one_elem(self,old_elem):
         pass
@@ -18,9 +18,9 @@ class docx():
         self.find_elems(elem_to_remove)       
         for elem in self.elems:
             elem.getparent().remove(elem)
-    def change_one_elem(self,old_elem,new_elem):
-        self.add_elems(new_zfname)
-        self.remove_elems(elem_to_remove)
+    def change_one_elem(self,old_elem,new_text):
+        pass
+    def change_elems(self,old_elem,new_text):
         pass
     def __init__(self,fname):
         self.fname=fname
@@ -38,12 +38,16 @@ class docx():
         self.tree=tree
         self.root=root
         self.nsmap=root.nsmap
+        f.close()
         return root
     def find_elems(self,elem):
         elems=self.tree.xpath(elem,namespaces=self.nsmap)
         self.elems=elems
         return elems
     def save_docx(self):
+        f=open('tmp/word/document.xml',mode='w')
+        self.tree.write(f)
+        f.close()
         self.zip_dir('tmp')
         pass
     def zip_dir(self,dirname):
@@ -64,6 +68,12 @@ class docx():
 
 
 if __name__=='__main__':
+    logging.basicConfig(level=logging.DEBUG)
     mydoc=docx('tmp.docx')
-    mydoc.find_elems('//w:align')
+    mydoc.find_elems('//w:r')
+    new_elem='{%s}%s'%(mydoc.nsmap['w'],'t')
+    mydoc.add_elems(new_elem)
+    elems=mydoc.find_elems('//w:t')
+    for el in elems:
+        logging.debug(el.text)
     mydoc.save_docx()
