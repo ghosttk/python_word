@@ -10,15 +10,16 @@ class docx():
     def add_elems(self,new_elem):
         for elem in self.elems:
             rtn=etree.SubElement(elem,new_elem)
-            rtn.text='test'
         pass
     def remove_one_elem(self,old_elem):
+        logging.debug(old_elem.getparent())
+        old_elem.getparent().remove(old_elem)
         pass
     def remove_elems(self,elem_to_remove):
-        self.find_elems(elem_to_remove)       
+        elems=self.find_elems(elem_to_remove)       
         for elem in self.elems:
-            elem.getparent().remove(elem)
-    def change_one_elem(self,old_elem,new_text):
+            self.remove_one_elem(elem)
+    def change_one_elem(self,old_elem,new_elem):
         pass
     def change_elems(self,old_elem,new_text):
         pass
@@ -70,10 +71,8 @@ class docx():
 if __name__=='__main__':
     logging.basicConfig(level=logging.DEBUG)
     mydoc=docx('tmp.docx')
-    mydoc.find_elems('//w:r')
     new_elem='{%s}%s'%(mydoc.nsmap['w'],'t')
-    mydoc.add_elems(new_elem)
-    elems=mydoc.find_elems('//w:t')
-    for el in elems:
-        logging.debug(el.text)
+    mydoc.find_elems('//wp:positionH/wp:posOffset')
+    mydoc.remove_elems('//wp:positionH/wp:posOffset')
+
     mydoc.save_docx()
