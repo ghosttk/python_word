@@ -7,9 +7,10 @@ import shutil
 from lxml import etree
 
 class docx():
-    def add_elems(self,new_elem):
+    def add_elems(self,new_elem,new_text):
         for elem in self.elems:
-            rtn=etree.SubElement(elem,new_elem)
+            new=etree.SubElement(elem,new_elem)
+            new.text=new_text
         pass
     def remove_one_elem(self,old_elem):
         logging.debug(old_elem.getparent())
@@ -71,8 +72,10 @@ class docx():
 if __name__=='__main__':
     logging.basicConfig(level=logging.DEBUG)
     mydoc=docx('tmp.docx')
-    new_elem='{%s}%s'%(mydoc.nsmap['w'],'t')
-    mydoc.find_elems('//wp:positionH/wp:posOffset')
     mydoc.remove_elems('//wp:positionH/wp:posOffset')
+    mydoc.find_elems('//wp:positionH')
+    new_elem='{%s}%s'%(mydoc.nsmap['wp'],'align')
+    new_text='right'
+    mydoc.add_elems(new_elem,new_text)
 
     mydoc.save_docx()
